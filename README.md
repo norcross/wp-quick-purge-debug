@@ -1,2 +1,2 @@
-# wp-quick-purge-debug
-A quick tool for purging the debug file in WordPress
+# Quick Purge Debug for WordPress
+Add ways to quickly purge the debug log file.
