@@ -33,14 +33,14 @@ function purge_debug_via_user( $args ) {
 		return;
 	}
 
-	// Bail on a non authorized user.
-	if ( ! current_user_can( 'manage_options' ) ) {
-		wp_die( __( 'You are not authorized to perform this function.', 'quick-purge-debug' ), __( 'Quick Purge Debug Tool', 'quick-purge-debug' ) );
-	}
-
 	// Check for the query string.
 	if ( empty( $_GET['qpd-purge-run'] ) ) {
 		return;
+	}
+
+	// Bail on a non authorized user.
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( __( 'You are not authorized to perform this function.', 'quick-purge-debug' ), __( 'Quick Purge Debug Tool', 'quick-purge-debug' ) );
 	}
 
 	// Now check the nonce.
