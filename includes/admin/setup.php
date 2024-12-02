@@ -27,17 +27,14 @@ add_filter( 'removable_query_args', __NAMESPACE__ . '\admin_removable_args' );
 function admin_removable_args( $args ) {
 
 	// Set an array of the args we wanna exclude.
-	$remove = array(
+	$remove = [
 		'qpd-purge-run',
 		'qpd-purge-nonce',
 		'qpd-purge-complete',
 		'qpd-purge-result',
 		'qpd-purge-error',
-	);
-
-	// Set the array of new args.
-	$setup  = apply_filters( Core\HOOK_PREFIX . 'admin_removable_args', $remove );
+	];
 
 	// Include my new args and return.
-	return ! empty( $setup ) ? wp_parse_args( $setup, $args ) : $args;
+	return wp_parse_args( $remove, $args );
 }

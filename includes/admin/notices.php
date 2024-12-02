@@ -24,35 +24,43 @@ add_action( 'admin_notices', __NAMESPACE__ . '\admin_result_notices' );
  */
 function admin_result_notices() {
 
-	// Make sure we have the completed flags.
-	if ( empty( $_GET['qpd-purge-complete'] ) || empty( $_GET['qpd-purge-result'] ) ) {
+	// Confirm this is one of our notices when done.
+	$confirm_isdone = filter_input( INPUT_GET, 'qpd-purge-complete', FILTER_SANITIZE_SPECIAL_CHARS );
+
+	// Make sure it is what we want.
+	if ( empty( $confirm_isdone ) || 'yes' !== $confirm_isdone ) {
 		return;
 	}
 
-	// Determine the message type.
-	$result = ! empty( $_GET['qpd-purge-result'] ) && 'success' === sanitize_text_field( $_GET['qpd-purge-result'] ) ? 'success' : 'error';
+	// Confirm this is one of our results when done.
+	$confirm_result = filter_input( INPUT_GET, 'qpd-purge-result', FILTER_SANITIZE_SPECIAL_CHARS );
 
-	// Handle the success first
-	if ( 'error' !== $result ) {
+	// Make sure it is acceptable.
+	if ( empty( $confirm_result ) || ! in_array( $confirm_result, ['success', 'error'], true )  ) {
+		return;
+	}
+
+	// Handle the success first.
+	if ( 'success' === $confirm_result ) {
 
 		// Go get my text to display.
-		$notice = Helpers\get_admin_notice_text( 'purge-success' );
+		$isdone_message = Helpers\get_admin_notice_text( 'purge-success' );
 
 		// And handle the display.
-		display_admin_notice_markup( $notice, $result );
+		display_admin_notice_markup( $isdone_message, $confirm_result );
 
 		// And be done.
 		return;
 	}
 
 	// Figure out my error code.
-	$error_code = ! empty( $_GET['qpd-purge-error'] ) ? $_GET['qpd-purge-error'] : 'unknown';
+	$confirm_error  = filter_input( INPUT_GET, 'qpd-purge-error', FILTER_SANITIZE_SPECIAL_CHARS );
 
 	// Handle my error text retrieval.
-	$error_text = Helpers\get_admin_notice_text( $error_code );
+	$error_message  = Helpers\get_admin_notice_text( $confirm_error );
 
 	// And handle the display.
-	display_admin_notice_markup( $error_text, 'error' );
+	display_admin_notice_markup( $error_message, 'error' );
 }
 
 /**

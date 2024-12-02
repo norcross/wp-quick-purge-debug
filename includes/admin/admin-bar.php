@@ -87,16 +87,16 @@ function fetch_admin_bar_args() {
 	$maybe_link_target  = ! is_admin() ? '_blank' : '';
 
 	// Now set up the args.
-	$set_admin_bar_args = array(
+	$set_admin_bar_args = [
 		'id'       => Core\ADMIN_BAR_ID,
 		'title'    => $admin_bar_titles['title'],
 		'href'     => esc_url( $get_admin_bar_link ),
 		'position' => 0,
-		'meta'     => array(
+		'meta'     => [
 			'title'    => esc_attr( $admin_bar_titles['hover'] ),
 			'target'   => $maybe_link_target,
-		),
-	);
+		],
+	];
 
 	// And return them, filtered.
 	return apply_filters( Core\HOOK_PREFIX . 'admin_bar_args', $set_admin_bar_args );
