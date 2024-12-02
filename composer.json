@@ -1,0 +1,16 @@
+{
+    "name": "norcross/quick-purge-debug",
+    "description": "Adds an admin bar icon and CLI command for quickly purging the debug logfile.",
+    "type": "wordpress-plugin",
+    "license": "MIT",
+    "authors":[
+        {
+            "name": "Andrew Norcross",
+            "email": "andrew@andrewnorcross.com",
+            "homepage": "https://github.com/norcross"
+        }
+    ],
+    "require": {
+        "composer/installers": "^1 || ^2"
+    }
+}

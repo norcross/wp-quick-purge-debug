@@ -27,25 +27,32 @@ add_action( 'admin_init', __NAMESPACE__ . '\purge_debug_via_user' );
  */
 function purge_debug_via_user( $args ) {
 
-
 	// Bail if the user is not logged in, an Ajax call, or a CLI call.
-	if ( ! is_user_logged_in() || ! is_admin() || wp_doing_ajax() || defined( 'WP_CLI' ) && WP_CLI ) {
+	if ( ! is_user_logged_in() || ! is_admin() || wp_doing_ajax() || defined( 'WP_CLI' ) && WP_CLI ) { // phpcs:ignore -- the nonce check is happening soon.
+		return;
+	}
+
+	// Confirm we requested this action.
+	$confirm_action = filter_input( INPUT_GET, 'qpd-purge-run', FILTER_SANITIZE_SPECIAL_CHARS ); // phpcs:ignore -- the nonce check is happening soon.
+
+	// Make sure it is what we want.
+	if ( empty( $confirm_action ) || 'yes' !== $confirm_action ) {
 		return;
 	}
 
 	// Bail on a non authorized user.
-	if ( ! current_user_can( 'manage_options' ) ) {
+	if ( ! current_user_can( 'manage_options' ) ) { // phpcs:ignore -- the nonce check is happening soon.
 		wp_die( __( 'You are not authorized to perform this function.', 'quick-purge-debug' ), __( 'Quick Purge Debug Tool', 'quick-purge-debug' ) );
 	}
 
-	// Check for the query string.
-	if ( empty( $_GET['qpd-purge-run'] ) ) {
-		return;
-	}
+	// Make sure we have a nonce.
+	$confirm_nonce  = filter_input( INPUT_GET, 'qpd-purge-nonce', FILTER_SANITIZE_SPECIAL_CHARS ); // phpcs:ignore -- the nonce check is happening after this.
 
-	// Now check the nonce.
-	if ( ! $_GET['qpd-purge-nonce'] || ! wp_verify_nonce( $_GET['qpd-purge-nonce'], Core\NONCE_PREFIX . '-run' ) ) {
-		wp_die( __( 'Your security nonce failed.', 'quick-purge-debug' ), __( 'Quick Purge Debug Tool', 'quick-purge-debug' ) );
+	// Handle the nonce check.
+	if ( empty( $confirm_nonce ) || ! wp_verify_nonce( $confirm_nonce, Core\NONCE_PREFIX . '_run' ) ) {
+
+		// Let them know they had a failure.
+		wp_die( esc_html__( 'There was an error validating the nonce.', 'quick-purge-debug' ), esc_html__( 'Quick Purge Debug Tool', 'quick-purge-debug' ), [ 'back_link' => true ] );
 	}
 
 	// Get our logfile.
@@ -87,16 +94,16 @@ function run_redirect_after_purge( $purge_result = '', $error_code = '' ) {
 	$set_purge_result   = ! empty( $purge_result ) && 'success' === sanitize_text_field( $purge_result ) ? 'success' : 'error';
 
 	// Set up the args for the redirect.
-	$set_redirect_args  = array(
-		'qpd-purge-complete' => 1,
+	$set_redirect_args  = [
+		'qpd-purge-complete' => 'yes',
 		'qpd-purge-result'   => $set_purge_result,
 		'qpd-purge-error'    => $error_code,
-	);
+	];
 
 	// And redirect with a query string.
 	$set_redirect_url   = add_query_arg( $set_redirect_args, admin_url( '/' ) );
 
 	// Then redirect.
-	wp_redirect( $set_redirect_url );
+	wp_safe_redirect( $set_redirect_url );
 	exit;
 }

@@ -23,11 +23,11 @@ function get_logfile_src() {
 }
 
 /**
- * Determine if the file size exists.
+ * Determine if the file exists, and possibly it's size.
  *
  * @param  string $return_type  How to return the data.
  *
- * @return boolean / integer
+ * @return mixed                A boolean if exists, integer if size.
  */
 function get_logfile_size( $return_type = 'bytes' ) {
 
@@ -59,16 +59,13 @@ function get_logfile_size( $return_type = 'bytes' ) {
 function get_logfile_purge_link() {
 
 	// Create the purge link, and decide if a target blank.
-	$set_purge_args = array(
-		'qpd-purge-run'   => 1,
-		'qpd-purge-nonce' => wp_create_nonce( Core\NONCE_PREFIX . '-run' ),
-	);
+	$set_purge_args = [
+		'qpd-purge-run'   => 'yes',
+		'qpd-purge-nonce' => wp_create_nonce( Core\NONCE_PREFIX . '_run' ),
+	];
 
-	// Now create the link.
-	$construct_link = add_query_arg( $set_purge_args, admin_url( '/' ) );
-
-	// And return the link.
-	return apply_filters( Core\HOOK_PREFIX . 'logfile_purge_link', $construct_link );
+	// Now create the link and return it.
+	return add_query_arg( $set_purge_args, admin_url( '/' ) );
 }
 
 /**
@@ -85,10 +82,10 @@ function get_admin_bar_titles() {
 	$adminbar_hover = ! empty( $debug_filesize ) ? sprintf( __( 'Purge Debug File (%d bytes)', 'quick-purge-debug' ), absint( $debug_filesize ) ) : __( 'Purge Debug File (empty)', 'quick-purge-debug' );
 
 	// Now set the array.
-	$set_admin_ttls = array(
+	$set_admin_ttls = [
 		'title' => '<span class="ab-icon dashicons-trash"></span>',
 		'hover' => $adminbar_hover,
-	);
+	];
 
 	// Return the titles, filtered.
 	return apply_filters( Core\HOOK_PREFIX . 'admin_bar_titles', $set_admin_ttls );
@@ -103,7 +100,15 @@ function get_admin_bar_titles() {
  */
 function get_admin_notice_text( $return_code = '' ) {
 
-	// Handle my different error codes.
+	// Allow a possible custom message first.
+	$maybe_custom   = apply_filters( Core\HOOK_PREFIX . 'custom_message_text', '', $return_code );
+
+	// If someone passed a custom, do that.
+	if ( ! empty( $maybe_custom ) ) {
+		return $maybe_custom;
+	}
+
+	// Handle my different message codes.
 	switch ( esc_attr( $return_code ) ) {
 
 		case 'purge-success' :

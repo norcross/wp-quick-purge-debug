@@ -26,6 +26,14 @@ add_action( 'admin_bar_menu', __NAMESPACE__ . '\add_admin_bar_item', 9999 );
  */
 function add_admin_bar_item( \WP_Admin_Bar $wp_admin_bar ) {
 
+	// Add the check to hide the empty.
+	$check_show = maybe_hide_admin_icon();
+
+	// Bail if we got a false.
+	if ( false === $check_show ) {
+		return;
+	}
+
 	// Get my purge file args.
 	$purge_args = fetch_admin_bar_args();
 
@@ -36,6 +44,28 @@ function add_admin_bar_item( \WP_Admin_Bar $wp_admin_bar ) {
 }
 
 /**
+ * Check to see if we should show the empty.
+ *
+ * @return boolean
+ */
+function maybe_hide_admin_icon() {
+
+	// First pass in our filter.
+	$hide_empty = apply_filters( Core\HOOK_PREFIX . 'hide_icon_when_empty', true );
+
+	// If we don't care, show it regardless.
+	if ( false === $hide_empty ) {
+		return true;
+	}
+
+	// Now get the file size.
+	$debug_size = Helpers\get_logfile_size();
+
+	// Now return the result.
+	return ! empty( $debug_size ) ? true : false;
+}
+
+/**
  * Set all the args for the purge debug admin bar item.
  *
  * @return array
@@ -43,31 +73,31 @@ function add_admin_bar_item( \WP_Admin_Bar $wp_admin_bar ) {
 function fetch_admin_bar_args() {
 
 	// Get the actual purge link.
-	$adminbar_link  = Helpers\get_logfile_purge_link();
+	$get_admin_bar_link = Helpers\get_logfile_purge_link();
 
 	// Bail if we don't have a link.
-	if ( empty( $adminbar_link ) ) {
+	if ( empty( $get_admin_bar_link ) ) {
 		return;
 	}
 
 	// Get the standard title, which is a trash can for us.
-	$fetch_titles    = Helpers\get_admin_bar_titles();
+	$admin_bar_titles   = Helpers\get_admin_bar_titles();
 
 	// Decide if a target blank.
-	$adminbar_blank = ! is_admin() ? '_blank' : '';
+	$maybe_link_target  = ! is_admin() ? '_blank' : '';
 
 	// Now set up the args.
-	$adminbar_array = array(
+	$set_admin_bar_args = [
 		'id'       => Core\ADMIN_BAR_ID,
-		'title'    => $fetch_titles['title'],
-		'href'     => esc_url( $adminbar_link ),
+		'title'    => $admin_bar_titles['title'],
+		'href'     => esc_url( $get_admin_bar_link ),
 		'position' => 0,
-		'meta'     => array(
-			'title'    => esc_attr( $fetch_titles['hover'] ),
-			'target'   => $adminbar_blank,
-		),
-	);
+		'meta'     => [
+			'title'    => esc_attr( $admin_bar_titles['hover'] ),
+			'target'   => $maybe_link_target,
+		],
+	];
 
 	// And return them, filtered.
-	return apply_filters( Core\HOOK_PREFIX . 'admin_bar_args', $adminbar_array );
+	return apply_filters( Core\HOOK_PREFIX . 'admin_bar_args', $set_admin_bar_args );
 }

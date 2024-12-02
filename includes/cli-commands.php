@@ -48,29 +48,14 @@ class QuickPurgeDebugCLICommands extends WP_CLI_Command {
 		// Erase the debug file.
 		$maybe_purge_file   = file_put_contents( $fetch_logfile_src, '' );
 
-		// And run our redirect if it worked.
-		if ( false !== $maybe_purge_file ) {
-
-			// Show the result and bail.
-			WP_CLI::success( Helpers\get_admin_notice_text( 'purge-success' ) );
-			WP_CLI::halt( 0 );
+		// Throw the error message if that failed.
+		if ( false === $maybe_purge_file ) {
+			WP_CLI::error( Helpers\get_admin_notice_text( 'purge-file-error' ) );
 		}
 
-		// Redirect the error.
-		WP_CLI::error( Helpers\get_admin_notice_text( 'purge-file-error' ) );
-	}
-
-	/**
-	 * This is a placeholder function for testing.
-	 *
-	 * ## EXAMPLES
-	 *
-	 *     wp quick-debug-purge runtests
-	 *
-	 * @when after_wp_load
-	 */
-	function runtests() {
-		// This is blank, just here when I need it.
+		// Tell me I did a good job.
+		WP_CLI::success( Helpers\get_admin_notice_text( 'purge-success' ) );
+		WP_CLI::halt( 0 );
 	}
 
 	// End all custom CLI commands.
