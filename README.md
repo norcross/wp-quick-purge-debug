@@ -1,2 +1,2 @@
 # Quick Purge Debug for WordPress
-Add ways to quickly purge the debug log file.
+Adds an admin bar icon and CLI command for quickly purging the debug logfile.

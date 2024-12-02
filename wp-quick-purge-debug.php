@@ -4,10 +4,10 @@
  * Plugin URI:      https://github.com/norcross/wp-quick-purge-debug
  * Description:     Add ways to quickly purge the debug log file.
  * Author:          Andrew Norcross
- * Author URI:      http://andrewnorcross.com
+ * Author URI:      https://andrewnorcross.com
  * Text Domain:     quick-purge-debug
  * Domain Path:     /languages
- * Version:         0.0.1
+ * Version:         0.0.2
  *
  * @package         QuickPurgeDebug
  */
@@ -22,7 +22,7 @@ use WP_CLI;
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 // Define our plugin version.
-define( __NAMESPACE__ . '\VERS', '0.0.1-dev' );
+define( __NAMESPACE__ . '\VERS', '0.0.2' );
 
 // Plugin root file.
 define( __NAMESPACE__ . '\FILE', __FILE__ );

@@ -4,6 +4,6 @@ All notable changes to this project will be documented in this file, according t
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-##[0.0.0]
+##[0.0.2]
 
 * Initial public release.
